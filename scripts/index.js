@@ -17,7 +17,6 @@ function addCard(name, link) {
   renderCard(placesList, card);
 }
 
-
 // @todo: Функция удаления карточки
 function delCard(element) {
   element.remove();
