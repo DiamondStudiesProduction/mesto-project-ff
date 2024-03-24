@@ -1,33 +1,82 @@
-// @todo: DOM узлы
-// @todo: Функция создания карточки
-// @todo: Темплейт карточки
-// @todo: Функция удаления карточки
-// @todo: Вывести карточки на страницу
-const template = document.querySelector("#card-template").content;
-const placesList = document.querySelector(".places__list");
+import { initialCards } from "./cards.js";
+import {
+  addCard,
+  delCard,
+  renderCard,
+  heartLike,
+  addCardFormSubmit,
+} from "../src/components/card.js";
+import {
+  openImageCard,
+  addPopupClass,
+  handleFormSubmit,
+  replacePopupResetValues,
+  popupCloseButton,
+  popupCloseKeyboard,
+  overlay,
+} from "../src/components/modal.js";
+export const template = document.querySelector("#card-template").content;
+export const placesList = document.querySelector(".places__list");
 
-function addCard(dataCard, delCardCallBack) {
-  const card = template.querySelector(".card").cloneNode(true);
-  card.querySelector(".card__title").textContent = dataCard.name;
-  const CardImage = card.querySelector(".card__image");
-  CardImage.setAttribute("src", dataCard.link);
-  CardImage.setAttribute("alt", dataCard.name);
-  const delButton = card.querySelector(".card__delete-button");
-  delButton.addEventListener("click", () => {
-    delCardCallBack(card);
-  });
-  return card;
-}
+const formElement = document.forms["edit-profile"];
+export const nameInput = formElement.elements.name;
+export const jobInput = formElement.elements.description;
+export const profileTitle = document.querySelector(".profile__title");
+export const profileDescription = document.querySelector(
+  ".profile__description"
+);
 
-function delCard(element) {
-  element.remove();
-}
+const formNewPlace = document.forms["new-place"];
+export const placeName = formNewPlace.elements["place-name"];
+export const link = formNewPlace.elements.link;
 
-function renderCard(element, elem) {
-  element.append(elem);
-}
+const pageContent = document.querySelector(".page__content");
+const popupList = document.querySelectorAll(".popup");
 
 initialCards.forEach((element) => {
   const addCardReturn = addCard(element, delCard);
   renderCard(placesList, addCardReturn);
 });
+
+popupList.forEach((elem) => {
+  elem.classList.add("popup_is-animated");
+});
+
+formElement.addEventListener("submit", handleFormSubmit);
+formNewPlace.addEventListener("submit", addCardFormSubmit);
+
+replacePopupResetValues();
+
+pageContent
+  .querySelector(".profile__edit-button")
+  .addEventListener("click", (event) => {
+    addPopupClass(".popup_type_edit");
+    overlay();
+    popupCloseButton();
+    popupCloseKeyboard();
+  });
+
+pageContent
+  .querySelector(".profile__add-button")
+  .addEventListener("click", (event) => {
+    addPopupClass(".popup_type_new-card");
+    overlay();
+    popupCloseButton();
+    popupCloseKeyboard();
+  });
+
+pageContent
+  .querySelector(".places__list")
+  .addEventListener("click", (event) => {
+    if (event.target.classList.contains("card__image")) {
+      openImageCard(event);
+      addPopupClass(".popup_type_image");
+      overlay();
+      popupCloseButton();
+      popupCloseKeyboard();
+    }
+
+    if (event.target.classList.contains("card__like-button")) {
+      heartLike(event);
+    }
+  });
