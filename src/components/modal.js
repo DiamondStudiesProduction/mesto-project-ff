@@ -3,8 +3,9 @@ import {
   profileDescription,
   nameInput,
   jobInput,
+  placeName,
+  link,
 } from "../../scripts/index.js";
-import { removeAddCardValues } from "./card.js";
 
 export function openImageCard(event) {
   const cardImageSrc = event.target.getAttribute("src");
@@ -39,7 +40,7 @@ export function popupCloseButton() {
   document.addEventListener("click", popupCloseButtonCallBack);
 }
 
- function popupCloseButtonCallBack(event) {
+function popupCloseButtonCallBack(event) {
   const popupCloseButton = event.target;
   if (popupCloseButton.classList.contains("popup__close")) {
     popupCloseButton.closest(".popup").classList.remove("popup_is-opened");
@@ -50,7 +51,11 @@ export function popupCloseButton() {
   }
 }
 
- function popupCloseKeyboardCallBack(event) {
+export function popupCloseKeyboard() {
+  document.addEventListener("keydown", popupCloseKeyboardCallBack);
+}
+
+function popupCloseKeyboardCallBack(event) {
   if (event.key === "Escape") {
     document
       .querySelector(".popup_is-opened")
@@ -59,6 +64,10 @@ export function popupCloseButton() {
     replacePopupResetValues();
     removeAddCardValues();
   }
+}
+
+export function overlay() {
+  document.addEventListener("click", overlayCallBack);
 }
 
 function overlayCallBack(event) {
@@ -74,9 +83,7 @@ function overlayCallBack(event) {
   }
 }
 
-export function overlay() {
-  document.addEventListener("click", overlayCallBack);
-}
-export function popupCloseKeyboard() {
-  document.addEventListener("keydown", popupCloseKeyboardCallBack);
+export function removeAddCardValues() {
+  placeName.value = "";
+  link.value = "";
 }

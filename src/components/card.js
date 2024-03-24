@@ -1,5 +1,5 @@
 import { template, placeName, link, placesList } from "../../scripts/index.js";
-import { removePopup } from "./modal.js";
+import { removePopup, removeAddCardValues } from "./modal.js";
 
 export function addCard(dataCard, delCardCallBack, openImageCard, heartLike) {
   const card = template.querySelector(".card").cloneNode(true);
@@ -40,9 +40,4 @@ export function addCardFormSubmit(evt) {
   renderCard(placesList, cardReturn);
   removePopup(".popup_type_new-card", "popup_is-opened");
   removeAddCardValues();
-}
-
-export function removeAddCardValues() {
-  placeName.value = "";
-  link.value = "";
 }
