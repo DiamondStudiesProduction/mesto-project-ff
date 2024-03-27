@@ -1,25 +1,43 @@
-import { template, placeName, link, placesList } from "../../scripts/index.js";
-import { removePopup, removeAddCardValues } from "./modal.js";
+import {
+  template,
+  popupTypeImage,
+  changeAttributeImageCard,
+} from "../../scripts/index.js";
+import { openPopup, closePopup } from "./modal.js";
 
-export function addCard(dataCard, delCardCallBack, openImageCard, heartLike) {
+export function createCard(
+  dataCard,
+  delCardCallBack,
+  openImageCardCallBack,
+  heartLikeCallBack
+) {
   const card = template.querySelector(".card").cloneNode(true);
   card.querySelector(".card__title").textContent = dataCard.name;
   const cardImage = card.querySelector(".card__image");
+  const cardLike = card.querySelector(".card__like-button");
   cardImage.setAttribute("src", dataCard.link);
   cardImage.setAttribute("alt", dataCard.name);
   const delButton = card.querySelector(".card__delete-button");
   delButton.addEventListener("click", () => {
     delCardCallBack(card);
   });
+  cardImage.addEventListener("click", (event) => {
+    openImageCardCallBack(event);
+  });
+  cardLike.addEventListener("click", (event) => {
+    heartLikeCallBack(event);
+  });
   return card;
+}
+
+export function openImageCard(event) {
+  changeAttributeImageCard(event);
+  openPopup(popupTypeImage);
+  closePopup();
 }
 
 export function delCard(element) {
   element.remove();
-}
-
-export function renderCard(element, elem) {
-  element.prepend(elem);
 }
 
 export function heartLike(event) {
@@ -28,16 +46,4 @@ export function heartLike(event) {
   } else {
     event.target.classList.add("card__like-button_is-active");
   }
-}
-
-export function addCardFormSubmit(evt) {
-  evt.preventDefault();
-  const data = {
-    name: placeName.value,
-    link: link.value,
-  };
-  const cardReturn = addCard(data, delCard);
-  renderCard(placesList, cardReturn);
-  removePopup(".popup_type_new-card", "popup_is-opened");
-  removeAddCardValues();
 }
