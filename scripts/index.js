@@ -1,27 +1,23 @@
 import { initialCards } from "./cards.js";
+import { createCard, delCard, heartLike } from "../src/components/card.js";
 import {
-  createCard,
-  delCard,
-  heartLike,
-  openImageCard,
-} from "../src/components/card.js";
-import { openPopup, closePopup, removePopup } from "../src/components/modal.js";
-export const template = document.querySelector("#card-template").content;
-export const placesList = document.querySelector(".places__list");
-const editProfileForm = document.forms["edit-profile"];
-export const nameInput = editProfileForm.elements.name;
-export const jobInput = editProfileForm.elements.description;
-export const profileTitle = document.querySelector(".profile__title");
-export const profileDescription = document.querySelector(
-  ".profile__description"
-);
+  openPopup,
+  addListinerClosePopup,
+  removePopup,
+} from "../src/components/modal.js";
+const placesList = document.querySelector(".places__list");
+const formEditProfile = document.forms["edit-profile"];
+const inputName = formEditProfile.elements.name;
+const inputJob = formEditProfile.elements.description;
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
 const formNewPlace = document.forms["new-place"];
-export const placeName = formNewPlace.elements["place-name"];
-export const link = formNewPlace.elements.link;
+const placeName = formNewPlace.elements["place-name"];
+const link = formNewPlace.elements.link;
 const pageContent = document.querySelector(".page__content");
 const popupList = document.querySelectorAll(".popup");
-export const popupTypeEdit = pageContent.querySelector(".popup_type_edit");
-export const popupTypeImage = pageContent.querySelector(".popup_type_image");
+const popupTypeEdit = pageContent.querySelector(".popup_type_edit");
+const popupTypeImage = pageContent.querySelector(".popup_type_image");
 const popupTypeNewCard = pageContent.querySelector(".popup_type_new-card");
 
 initialCards.forEach((element) => {
@@ -38,7 +34,7 @@ popupList.forEach((elem) => {
   elem.classList.add("popup_is-animated");
 });
 
-editProfileForm.addEventListener("submit", editProfileFormSubmit);
+formEditProfile.addEventListener("submit", editProfileFormSubmit);
 formNewPlace.addEventListener("submit", addCardFormSubmit);
 
 replacePopupResetValues();
@@ -47,18 +43,20 @@ function renderCard(element, elem) {
   element.prepend(elem);
 }
 
-export function removeEventListener(event, element) {
-  document.removeEventListener(event, element);
+function openImageCard(event) {
+  changeAttributeImageCard(event);
+  openPopup(popupTypeImage);
+  addListinerClosePopup();
 }
 
-export function changeAttributeImageCard(event) {
+function changeAttributeImageCard(event) {
   const cardImageSrc = event.target.getAttribute("src");
   document.querySelector(".popup__image").setAttribute("src", cardImageSrc);
 }
 
-export function replacePopupResetValues() {
-  nameInput.value = profileTitle.textContent;
-  jobInput.value = profileDescription.textContent;
+function replacePopupResetValues() {
+  inputName.value = profileTitle.textContent;
+  inputJob.value = profileDescription.textContent;
 }
 
 function removeAddCardValues() {
@@ -66,7 +64,7 @@ function removeAddCardValues() {
   link.value = "";
 }
 
-export function changeValues() {
+function changeInputsValues() {
   replacePopupResetValues();
   removeAddCardValues();
 }
@@ -85,8 +83,8 @@ function addCardFormSubmit(evt) {
 
 function editProfileFormSubmit(evt) {
   evt.preventDefault();
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
+  profileTitle.textContent = inputName.value;
+  profileDescription.textContent = inputJob.value;
   removePopup(popupTypeEdit, "popup_is-opened");
 }
 
@@ -94,12 +92,14 @@ pageContent
   .querySelector(".profile__edit-button")
   .addEventListener("click", () => {
     openPopup(popupTypeEdit);
-    closePopup();
+    addListinerClosePopup();
+    changeInputsValues();
   });
 
 pageContent
   .querySelector(".profile__add-button")
   .addEventListener("click", () => {
     openPopup(popupTypeNewCard);
-    closePopup();
+    addListinerClosePopup();
+    changeInputsValues();
   });

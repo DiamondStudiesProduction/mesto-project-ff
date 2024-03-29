@@ -1,9 +1,4 @@
-import {
-  template,
-  popupTypeImage,
-  changeAttributeImageCard,
-} from "../../scripts/index.js";
-import { openPopup, closePopup } from "./modal.js";
+const template = document.querySelector("#card-template").content;
 
 export function createCard(
   dataCard,
@@ -17,8 +12,8 @@ export function createCard(
   const cardLike = card.querySelector(".card__like-button");
   cardImage.setAttribute("src", dataCard.link);
   cardImage.setAttribute("alt", dataCard.name);
-  const delButton = card.querySelector(".card__delete-button");
-  delButton.addEventListener("click", () => {
+  const buttonDel = card.querySelector(".card__delete-button");
+  buttonDel.addEventListener("click", () => {
     delCardCallBack(card);
   });
   cardImage.addEventListener("click", (event) => {
@@ -28,12 +23,6 @@ export function createCard(
     heartLikeCallBack(event);
   });
   return card;
-}
-
-export function openImageCard(event) {
-  changeAttributeImageCard(event);
-  openPopup(popupTypeImage);
-  closePopup();
 }
 
 export function delCard(element) {
