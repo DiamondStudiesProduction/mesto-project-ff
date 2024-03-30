@@ -1,6 +1,6 @@
 import { initialCards } from "./cards.js";
-import { createCard, delCard, heartLike } from "../src/components/card.js";
-import { openPopup, closePopup } from "../src/components/modal.js";
+import { createCard, delCard, heartLike } from "../components/card.js";
+import { openPopup, closePopup } from "../components/modal.js";
 const placesList = document.querySelector(".places__list");
 const formEditProfile = document.forms["edit-profile"];
 const inputName = formEditProfile.elements.name;
