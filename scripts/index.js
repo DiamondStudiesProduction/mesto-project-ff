@@ -1,10 +1,6 @@
 import { initialCards } from "./cards.js";
 import { createCard, delCard, heartLike } from "../src/components/card.js";
-import {
-  openPopup,
-  addListinerClosePopup,
-  removePopup,
-} from "../src/components/modal.js";
+import { openPopup, closePopup } from "../src/components/modal.js";
 const placesList = document.querySelector(".places__list");
 const formEditProfile = document.forms["edit-profile"];
 const inputName = formEditProfile.elements.name;
@@ -46,7 +42,6 @@ function renderCard(element, elem) {
 function openImageCard(event) {
   changeAttributeImageCard(event);
   openPopup(popupTypeImage);
-  addListinerClosePopup();
 }
 
 function changeAttributeImageCard(event) {
@@ -77,7 +72,7 @@ function addCardFormSubmit(evt) {
   };
   const cardReturn = createCard(data, delCard, openImageCard, heartLike);
   renderCard(placesList, cardReturn);
-  removePopup(popupTypeNewCard, "popup_is-opened");
+  closePopup(popupTypeNewCard);
   removeAddCardValues();
 }
 
@@ -85,14 +80,13 @@ function editProfileFormSubmit(evt) {
   evt.preventDefault();
   profileTitle.textContent = inputName.value;
   profileDescription.textContent = inputJob.value;
-  removePopup(popupTypeEdit, "popup_is-opened");
+  closePopup(popupTypeEdit);
 }
 
 pageContent
   .querySelector(".profile__edit-button")
   .addEventListener("click", () => {
     openPopup(popupTypeEdit);
-    addListinerClosePopup();
     changeInputsValues();
   });
 
@@ -100,6 +94,5 @@ pageContent
   .querySelector(".profile__add-button")
   .addEventListener("click", () => {
     openPopup(popupTypeNewCard);
-    addListinerClosePopup();
     changeInputsValues();
   });
