@@ -69,12 +69,6 @@ export const enableValidation = (obj) => {
 export const clearValidation = (profileForm, validationConfig) => {
   const inputList = Array.from(profileForm.querySelectorAll(validationConfig.inputSelector));
   const buttonElement = profileForm.querySelector(validationConfig.submitButtonSelector);
- // inputList.forEach((inputElement) => {
-  //  const errorElement = profileForm.querySelector(`.${inputElement.id}-error`);
-   // inputElement.classList.remove(validationConfig.inputErrorClass);
-   // errorElement.classList.remove(validationConfig.errorClass);
-   // errorElement.textContent = "";
- // })
   inputList.forEach((inputElement) => {
     hideInputError(profileForm,inputElement,validationConfig);
   })

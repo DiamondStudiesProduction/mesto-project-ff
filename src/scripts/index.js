@@ -6,7 +6,15 @@ import {
 } from "../components/card.js";
 import { openPopup, closePopup } from "../components/modal.js";
 import { enableValidation, clearValidation } from "../components/validation.js";
-import { config } from "../components/api.js";
+import {
+  config,
+  editAvatarRequest,
+  deleteLikeRequest,
+  putLikeRequest,
+  deleteCardRequest,
+  createNewCardRequest,
+  editProfileRequest,
+} from "../components/api.js";
 const placesList = document.querySelector(".places__list");
 const formEditProfile = document.forms["edit-profile"];
 const inputName = formEditProfile.elements.name;
@@ -28,17 +36,7 @@ const popupTypeEditAvatar = pageContent.querySelector(
 );
 const profileImage = document.querySelector(".profile__image");
 let myId = "";
-/*
-initialCards.forEach((element) => {
-  const createCardReturn = createCard(
-    element,
-    delCard,
-    openImageCard,
-    heartLike
-  );
-  renderCard(placesList, createCardReturn);
-});
-*/
+
 popupList.forEach((elem) => {
   elem.classList.add("popup_is-animated");
 });
@@ -82,10 +80,10 @@ function changeInputsValues() {
   removeAvatarValue();
 }
 
-function loading(element, bool){
-  if(bool){
+function loading(element, bool) {
+  if (bool) {
     element.textContent = "Сохранение...";
-  }else{
+  } else {
     element.textContent = "Сохранить";
   }
 }
@@ -93,7 +91,7 @@ function loading(element, bool){
 function addCardFormSubmit(evt) {
   evt.preventDefault();
   const evtElement = evt.target.querySelector(".popup__button");
-  loading(evtElement,true);
+  loading(evtElement, true);
   const data = {
     name: placeName.value,
     link: link.value,
@@ -103,62 +101,61 @@ function addCardFormSubmit(evt) {
   const prom = new Promise((resolve, reject) => {
     createNewCardRequest(placeName.value, link.value)
       .then((res) => {
-        if(res){
+        if (res) {
           data._id = res._id;
           return res;
         }
       })
       .then((res) => {
-        if(res){
-        const cardReturn = createCard(
-          data,
-          openImageCard,
-          heartLike,
-          putLikeRequest,
-          deleteLikeRequest,
-          deleteCardRequest,
-          delCard,
-          "",
-          ""
-        );
-        renderCard(placesList, cardReturn);
-        closePopup(popupTypeNewCard);
-        removeAddCardValues();
-      }
+        if (res) {
+          const cardReturn = createCard(
+            data,
+            openImageCard,
+            heartLike,
+            putLikeRequest,
+            deleteLikeRequest,
+            deleteCardRequest,
+            delCard,
+            "",
+            ""
+          );
+          renderCard(placesList, cardReturn);
+          closePopup(popupTypeNewCard);
+          removeAddCardValues();
+        }
       })
       .finally(() => {
-        loading(evtElement,false);
-      })
+        loading(evtElement, false);
+      });
   });
 }
 
 function editProfileFormSubmit(evt) {
   evt.preventDefault();
   const evtElement = evt.target.querySelector(".popup__button");
-  loading(evtElement,true);
+  loading(evtElement, true);
   profileTitle.textContent = inputName.value;
   profileDescription.textContent = inputJob.value;
-  editProfileRequest(inputName.value, inputJob.value)
-  .finally(() => {
-    loading(evtElement,false);
-  })
+  editProfileRequest(inputName.value, inputJob.value).finally(() => {
+    loading(evtElement, false);
+  });
   closePopup(popupTypeEdit);
 }
 
 function editAvatarFormSubmit(evt) {
   evt.preventDefault();
   const evtElement = evt.target.querySelector(".popup__button");
-  loading(evtElement,true);
+  loading(evtElement, true);
   const url = inputLink.value;
-    editAvatarRequest(url)
+  editAvatarRequest(url)
     .then((response) => {
-      if(response){
+      if (response) {
         profileImage.style.backgroundImage = `url(${response.avatar})`;
       }
     })
     .finally(() => {
-      loading(evtElement,false);
-    })
+      loading(evtElement, false);
+    });
   closePopup(popupTypeEditAvatar);
 }
 
@@ -221,9 +218,9 @@ const getAboutMe = new Promise((resolve, reject) => {
     },
   })
     .then((res) => {
-      if(res.ok){
+      if (res.ok) {
         return res.json();
-      }else{
+      } else {
         return Promise.reject(`Ошибка: ${res.status}`);
       }
     })
@@ -235,7 +232,7 @@ const getAboutMe = new Promise((resolve, reject) => {
     })
     .catch((err) => {
       console.log(err);
-    })
+    });
 });
 
 const getCards = new Promise((resolve, reject) => {
@@ -245,9 +242,9 @@ const getCards = new Promise((resolve, reject) => {
     },
   })
     .then((res) => {
-      if(res.ok){
+      if (res.ok) {
         return res.json();
-      }else{
+      } else {
         return Promise.reject(`Ошибка: ${res.status}`);
       }
     })
@@ -284,140 +281,6 @@ const getCards = new Promise((resolve, reject) => {
     })
     .catch((err) => {
       console.log(err);
-    })
+    });
 });
-
-function editProfileRequest(name, job) {
- return fetch(`${config.baseUrl}/users/me`, {
-    method: "PATCH",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      about: job,
-    }),
-  })
-  .then((res) => {
-    if(res.ok){
-      return res.json();
-    }else{
-      return Promise.reject(`Ошибка: ${res.status}`);
-    }
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-}
-
-const createNewCardRequest = (name, link) => {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: "POST",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      link: link,
-    }),
-  })
-    .then((res) => {
-      if(res.ok){
-        return res.json();
-      }else{
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-};
-
-function deleteCardRequest(id) {
-  fetch(`${config.baseUrl}/cards/${id}`, {
-    method: "DELETE",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-function putLikeRequest(id) {
-  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
-    method: "PUT",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => {
-      if(res.ok){
-        return res.json();
-      }else{
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-}
-
-function deleteLikeRequest(id) {
-  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
-    method: "DELETE",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => {
-      if(res.ok){
-        return res.json();
-      }else{
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-}
-
-function editAvatarRequest(url) {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: "PATCH",
-    headers: {
-      authorization: config.headers.authorization,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      avatar: url,
-    }),
-  })
-    .then((res) => {
-      if(res.ok){
-        return res.json();
-      }else{
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-}
-
 Promise.all([getAboutMe, getCards]);
