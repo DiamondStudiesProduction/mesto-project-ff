@@ -1,1 +1,1 @@
-httpsDiamondStudiesProduction.github.iomesto-project-ff
+ https://DiamondStudiesProduction.github.io/mesto-project-ff
