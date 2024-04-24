@@ -109,9 +109,7 @@ export const createNewCardRequest = (name, link) => {
     .then((data) => {
       return data;
     })
-    .catch((err) => {
-      console.log(err);
-    });
+
 };
 
 export function editProfileRequest(name, job) {
@@ -137,3 +135,45 @@ export function editProfileRequest(name, job) {
       console.log(err);
     });
 }
+
+export function getAboutMe(){ 
+  return fetch(`${config.baseUrl}/users/me`, {
+    headers: {
+      authorization: config.headers.authorization,
+    },
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
+export function getCards() {
+  return fetch(`${config.baseUrl}/cards`, {
+    headers: {
+      authorization: config.headers.authorization,
+    },
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
