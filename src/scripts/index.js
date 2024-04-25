@@ -1,9 +1,4 @@
-import {
-  createCard,
-  delCard,
-  heartLike,
-  heartLikeActive,
-} from "../components/card.js";
+import { createCard, delCard, heartLikeActive } from "../components/card.js";
 import { openPopup, closePopup } from "../components/modal.js";
 import { enableValidation, clearValidation } from "../components/validation.js";
 import {
@@ -14,7 +9,7 @@ import {
   createNewCardRequest,
   editProfileRequest,
   getAboutMe,
-  getCards
+  getCards,
 } from "../components/api.js";
 const placesList = document.querySelector(".places__list");
 const formEditProfile = document.forms["edit-profile"];
@@ -29,6 +24,7 @@ const profileDescription = document.querySelector(".profile__description");
 const link = formNewPlace.elements.link;
 const pageContent = document.querySelector(".page__content");
 const popupList = document.querySelectorAll(".popup");
+const popupImage = document.querySelector(".popup__image");
 const popupTypeEdit = pageContent.querySelector(".popup_type_edit");
 const popupTypeImage = pageContent.querySelector(".popup_type_image");
 const popupTypeNewCard = pageContent.querySelector(".popup_type_new-card");
@@ -37,9 +33,17 @@ const popupTypeEditAvatar = pageContent.querySelector(
 );
 const profileImage = document.querySelector(".profile__image");
 let myId = "";
+const popupCaption = document.querySelector(".popup__caption");
+const clearValidationParams = {
+  inputSelector: ".popup__input",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__form_input-error_active",
+  inactiveButtonClass: "popup__button_inactive",
+  submitButtonSelector: ".popup__button",
+};
 
-popupList.forEach((elem) => {
-  elem.classList.add("popup_is-animated");
+popupList.forEach((element) => {
+  element.classList.add("popup_is-animated");
 });
 
 formEditProfile.addEventListener("submit", editProfileFormSubmit);
@@ -47,12 +51,12 @@ formNewPlace.addEventListener("submit", addCardFormSubmit);
 formEditAvatar.addEventListener("submit", editAvatarFormSubmit);
 replacePopupResetValues();
 
-function renderAddedCard(element, elem) {
-  element.prepend(elem);
+function renderAddedCard(container, element) {
+  container.prepend(element);
 }
 
-function renderLoadingCard(element, elem) {
-  element.append(elem);
+function renderLoadingCard(container, element) {
+  container.append(element);
 }
 
 function openImageCard(event) {
@@ -62,15 +66,12 @@ function openImageCard(event) {
 
 function changeAttributeImageCard(event) {
   const cardImageSrc = event.target.getAttribute("src");
-  const popupImage = document.querySelector(".popup__image");
   const cardTitle = event.target
     .closest(".card")
     .querySelector(".card__title").textContent;
   popupImage.setAttribute("src", cardImageSrc);
   popupImage.setAttribute("alt", cardTitle);
-  popupImage
-    .closest(".popup__content")
-    .querySelector(".popup__caption").textContent = cardTitle;
+  popupCaption.textContent = cardTitle;
 }
 
 function replacePopupResetValues() {
@@ -111,35 +112,34 @@ function addCardFormSubmit(evt) {
     likes: [],
     _id: "",
   };
-    createNewCardRequest(placeName.value, link.value)
-      .then((res) => {
-        if (res) {
-          data._id = res._id;
-          return res;
-        }
-      })
-      .then(() => {
-          const cardReturn = createCard(
-            data,
-            openImageCard,
-            heartLike,
-            putLikeRequest,
-            deleteLikeRequest,
-            deleteCardRequest,
-            delCard,
-            "",
-            ""
-          );
-          renderAddedCard(placesList, cardReturn);
-          closePopup(popupTypeNewCard);
-          removeAddCardValues();
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        loading(evtElement, false);
-      });
+  createNewCardRequest(placeName.value, link.value)
+    .then((res) => {
+      if (res) {
+        data._id = res._id;
+        return res;
+      }
+    })
+    .then(() => {
+      const cardReturn = createCard(
+        data,
+        openImageCard,
+        putLikeRequest,
+        deleteLikeRequest,
+        deleteCardRequest,
+        delCard,
+        "",
+        ""
+      );
+      renderAddedCard(placesList, cardReturn);
+      closePopup(popupTypeNewCard);
+      removeAddCardValues();
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      loading(evtElement, false);
+    });
 }
 
 function editProfileFormSubmit(evt) {
@@ -148,19 +148,19 @@ function editProfileFormSubmit(evt) {
   loading(evtElement, true);
 
   editProfileRequest(inputName.value, inputJob.value)
-  .then((res) => {
-    if(res){
-    profileTitle.textContent = inputName.value;
-    profileDescription.textContent = inputJob.value;
-    closePopup(popupTypeEdit);
-    }
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally(() => {
-    loading(evtElement, false);
-  })
+    .then((res) => {
+      if (res) {
+        profileTitle.textContent = inputName.value;
+        profileDescription.textContent = inputJob.value;
+        closePopup(popupTypeEdit);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      loading(evtElement, false);
+    });
 }
 
 function editAvatarFormSubmit(evt) {
@@ -175,8 +175,8 @@ function editAvatarFormSubmit(evt) {
         closePopup(popupTypeEditAvatar);
       }
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     })
     .finally(() => {
       loading(evtElement, false);
@@ -187,13 +187,7 @@ pageContent
   .querySelector(".profile__edit-button")
   .addEventListener("click", () => {
     openPopup(popupTypeEdit);
-    clearValidation(formEditProfile, {
-      inputSelector: ".popup__input",
-      inputErrorClass: "popup__input_type_error",
-      errorClass: "popup__form_input-error_active",
-      inactiveButtonClass: "popup__button_inactive",
-      submitButtonSelector: ".popup__button",
-    });
+    clearValidation(formEditProfile, clearValidationParams);
     changeInputsValues();
   });
 
@@ -201,25 +195,13 @@ pageContent
   .querySelector(".profile__add-button")
   .addEventListener("click", () => {
     openPopup(popupTypeNewCard);
-    clearValidation(formNewPlace, {
-      inputSelector: ".popup__input",
-      inputErrorClass: "popup__input_type_error",
-      errorClass: "popup__form_input-error_active",
-      inactiveButtonClass: "popup__button_inactive",
-      submitButtonSelector: ".popup__button",
-    });
+    clearValidation(formNewPlace, clearValidationParams);
     changeInputsValues();
   });
 
 profileImage.addEventListener("click", () => {
   openPopup(popupTypeEditAvatar);
-  clearValidation(formEditAvatar, {
-    inputSelector: ".popup__input",
-    inputErrorClass: "popup__input_type_error",
-    errorClass: "popup__form_input-error_active",
-    inactiveButtonClass: "popup__button_inactive",
-    submitButtonSelector: ".popup__button",
-  });
+  clearValidation(formEditAvatar, clearValidationParams);
   changeInputsValues();
 });
 
@@ -232,45 +214,41 @@ enableValidation({
   errorClass: "popup__form_input-error_active",
 });
 
-
-  
 Promise.all([getAboutMe(), getCards()])
-.then(([resultGetAboutMe,resultGetCards]) => {
-  profileImage.style.backgroundImage = `url(${resultGetAboutMe.avatar})`;
-  profileTitle.textContent = resultGetAboutMe.name;
-  profileDescription.textContent = resultGetAboutMe.about;
-  myId = resultGetAboutMe._id;
-  
-  resultGetCards.forEach((element) => {
-    if (element.owner._id === myId) {
-      const createCardReturn = createCard(
-        element,
-        openImageCard,
-        heartLike,
-        putLikeRequest,
-        deleteLikeRequest,
-        deleteCardRequest,
-        delCard,
-        heartLikeActive,
-        myId
-      );
-      renderLoadingCard(placesList, createCardReturn);
-    } else {
-      const createCardReturn = createCard(
-        element,
-        openImageCard,
-        heartLike,
-        putLikeRequest,
-        deleteLikeRequest,
-        "",
-        "",
-        heartLikeActive,
-        myId
-      );
-      renderLoadingCard(placesList, createCardReturn);
-    }
+  .then(([resultGetAboutMe, resultGetCards]) => {
+    profileImage.style.backgroundImage = `url(${resultGetAboutMe.avatar})`;
+    profileTitle.textContent = resultGetAboutMe.name;
+    profileDescription.textContent = resultGetAboutMe.about;
+    myId = resultGetAboutMe._id;
+
+    resultGetCards.forEach((element) => {
+      if (element.owner._id === myId) {
+        const createCardReturn = createCard(
+          element,
+          openImageCard,
+          putLikeRequest,
+          deleteLikeRequest,
+          deleteCardRequest,
+          delCard,
+          heartLikeActive,
+          myId
+        );
+        renderLoadingCard(placesList, createCardReturn);
+      } else {
+        const createCardReturn = createCard(
+          element,
+          openImageCard,
+          putLikeRequest,
+          deleteLikeRequest,
+          "",
+          "",
+          heartLikeActive,
+          myId
+        );
+        renderLoadingCard(placesList, createCardReturn);
+      }
+    });
+  })
+  .catch((error) => {
+    console.log(error);
   });
-})
-.catch((err) => {
-  console.log(err);
-});

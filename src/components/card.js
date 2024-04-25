@@ -3,7 +3,6 @@ const template = document.querySelector("#card-template").content;
 export function createCard(
   dataCard,
   openImageCardCallBack,
-  heartLikeCallBack,
   putLikeRequestCallBack,
   deleteLikeRequestCallBack,
   deleteCardRequestCallBack,
@@ -28,8 +27,15 @@ export function createCard(
 
   if (delCardCallBack) {
     buttonDel.addEventListener("click", () => {
-      delCardCallBack(card);
-      deleteCardRequestCallBack(dataCard._id);
+      deleteCardRequestCallBack(dataCard._id)
+        .then((data) => {
+          if (data) {
+            delCardCallBack(card);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     });
   } else {
     buttonDel.style.display = "none";
@@ -40,13 +46,11 @@ export function createCard(
   });
 
   cardLike.addEventListener("click", (event) => {
-    heartLikeCallBack(event);
     if (event.target.classList.contains("card__like-button_is-active")) {
-      likeAction(putLikeRequestCallBack, card, cardLikeNumber);
+      likeAction(deleteLikeRequestCallBack, card, cardLikeNumber, event.target);
     } else {
-      likeAction(deleteLikeRequestCallBack, card, cardLikeNumber);
+      likeAction(putLikeRequestCallBack, card, cardLikeNumber, event.target);
     }
-
   });
   return card;
 }
@@ -55,11 +59,11 @@ export function delCard(element) {
   element.remove();
 }
 
-export function heartLike(event) {
-  if (event.target.classList.contains("card__like-button_is-active")) {
-    event.target.classList.remove("card__like-button_is-active");
+function heartLike(likeElement) {
+  if (likeElement.classList.contains("card__like-button_is-active")) {
+    likeElement.classList.remove("card__like-button_is-active");
   } else {
-    event.target.classList.add("card__like-button_is-active");
+    likeElement.classList.add("card__like-button_is-active");
   }
 }
 
@@ -71,9 +75,15 @@ export function heartLikeActive(obj, myId, cardLike) {
   }
 }
 
-function likeAction(func, card, cardLikeNumber){
-    func(card.getAttribute("id")).then((data) => {
-      cardLikeNumber.textContent = data.likes.length;
+function likeAction(func, card, cardLikeNumber, likeElement) {
+  func(card.getAttribute("id"))
+    .then((data) => {
+      if (data) {
+        heartLike(likeElement);
+        cardLikeNumber.textContent = data.likes.length;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
-

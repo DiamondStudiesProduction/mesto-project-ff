@@ -26,8 +26,8 @@ export function editAvatarRequest(url) {
     .then((data) => {
       return data;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -49,8 +49,8 @@ export function deleteLikeRequest(id) {
     .then((data) => {
       return data;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -72,19 +72,32 @@ export function putLikeRequest(id) {
     .then((data) => {
       return data;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
 }
 
 export function deleteCardRequest(id) {
-  fetch(`${config.baseUrl}/cards/${id}`, {
+  return fetch(`${config.baseUrl}/cards/${id}`, {
     method: "DELETE",
     headers: {
       authorization: config.headers.authorization,
       "Content-Type": "application/json",
     },
-  });
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }
+    })
+    .then((data) => {
+      return data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 export const createNewCardRequest = (name, link) => {
@@ -108,8 +121,7 @@ export const createNewCardRequest = (name, link) => {
     })
     .then((data) => {
       return data;
-    })
-
+    });
 };
 
 export function editProfileRequest(name, job) {
@@ -131,12 +143,12 @@ export function editProfileRequest(name, job) {
         return Promise.reject(`Ошибка: ${res.status}`);
       }
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
 }
 
-export function getAboutMe(){ 
+export function getAboutMe() {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: {
       authorization: config.headers.authorization,
@@ -152,10 +164,10 @@ export function getAboutMe(){
     .then((result) => {
       return result;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
-  }
+}
 
 export function getCards() {
   return fetch(`${config.baseUrl}/cards`, {
@@ -173,7 +185,7 @@ export function getCards() {
     .then((result) => {
       return result;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     });
-  }
+}
